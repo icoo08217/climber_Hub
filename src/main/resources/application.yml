@@ -1,0 +1,15 @@
+
+
+spring:
+  application:
+    name: Climber's Hub
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:tcp://localhost/~/test
+    username:
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create
+#    show-sql: true
+    defer-datasource-initialization: true
