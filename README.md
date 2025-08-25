@@ -27,12 +27,14 @@ Lombok: @Getter, @Setter, @Builder 등의 어노테이션으로 반복적인 코
 MySQL Driver: Spring 애플리케이션이 MySQL 데이터베이스와 통신할 수 있도록 연결합니다.
 
 ## 구조
-도메인형 구조
+DDD - 도메인 주도 개발
+
+TDD - 테스트 주도 개발
 
 ## 도메인
-Member (회원)
-
-Gym (암장)
+1. Member (회원)
+2. Gym (암장) 
+3. Post (게시글)
 
 ## Memo
 ### 확장 가능한 부분들 List
