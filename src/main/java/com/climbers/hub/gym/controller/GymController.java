@@ -1,4 +1,4 @@
-package com.climbers.hub.gym.contoller;
+package com.climbers.hub.gym.controller;
 
 import com.climbers.hub.gym.dto.GymDto;
 import com.climbers.hub.gym.service.GymService;

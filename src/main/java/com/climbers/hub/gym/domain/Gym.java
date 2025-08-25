@@ -1,4 +1,4 @@
-package com.climbers.hub.gym;
+package com.climbers.hub.gym.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

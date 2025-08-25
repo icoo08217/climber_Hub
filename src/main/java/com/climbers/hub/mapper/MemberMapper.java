@@ -1,6 +1,6 @@
 package com.climbers.hub.mapper;
 
-import com.climbers.hub.member.Member;
+import com.climbers.hub.member.domain.Member;
 import com.climbers.hub.member.dto.MemberDto;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;

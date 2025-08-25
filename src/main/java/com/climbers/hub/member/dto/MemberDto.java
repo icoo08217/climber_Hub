@@ -1,6 +1,6 @@
 package com.climbers.hub.member.dto;
 
-import com.climbers.hub.member.Member;
+import com.climbers.hub.member.domain.Member;
 import lombok.Getter;
 
 public class MemberDto {

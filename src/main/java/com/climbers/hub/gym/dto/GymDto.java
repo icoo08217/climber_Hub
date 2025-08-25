@@ -1,6 +1,6 @@
 package com.climbers.hub.gym.dto;
 
-import com.climbers.hub.gym.Gym;
+import com.climbers.hub.gym.domain.Gym;
 import lombok.Getter;
 
 public class GymDto {

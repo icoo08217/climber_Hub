@@ -1,7 +1,7 @@
 package com.climbers.hub.member.service;
 
 import com.climbers.hub.mapper.MemberMapper;
-import com.climbers.hub.member.Member;
+import com.climbers.hub.member.domain.Member;
 import com.climbers.hub.member.dto.MemberDto;
 import com.climbers.hub.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;

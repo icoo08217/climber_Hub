@@ -2,7 +2,7 @@ package com.climbers.hub.gym.service;
 
 import com.climbers.hub.geocoding.dto.GeocodingDto;
 import com.climbers.hub.geocoding.service.GeocodingService;
-import com.climbers.hub.gym.Gym;
+import com.climbers.hub.gym.domain.Gym;
 import com.climbers.hub.gym.dto.GymDto;
 import com.climbers.hub.gym.repository.GymRepository;
 import lombok.RequiredArgsConstructor;
