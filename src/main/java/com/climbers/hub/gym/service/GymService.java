@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -17,6 +19,23 @@ public class GymService {
 
     private final GeocodingService geocodingService;
     private final GymRepository gymRepository;
+
+    @Transactional(readOnly = true)
+    public GymDto.GymDetailResponse getGym(Long gymId) {
+        log.info("GymId: {}, Climbing Gym 조회 시작.", gymId);
+        Gym findGym = gymRepository.findById(gymId)
+                .orElseThrow(() -> new IllegalArgumentException("Gym not found: " + gymId));
+        return new GymDto.GymDetailResponse(findGym);
+    }
+
+    @Transactional(readOnly = true)
+    public List<GymDto.GymSimpleResponse> getAllGym() {
+        log.info("Climbing Gym 모두 조회 시작.");
+        List<GymDto.GymSimpleResponse> gyms = gymRepository.findAll().stream()
+                .map(GymDto.GymSimpleResponse::new)
+                .toList();
+        return gyms;
+    }
 
     @Transactional
     public Long createGym(GymDto.GymCreateRequest request) {
@@ -40,5 +59,4 @@ public class GymService {
 
         return savedGym.getGymId();
     }
-
 }
