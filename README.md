@@ -29,3 +29,7 @@ MySQL Driver: Spring 애플리케이션이 MySQL 데이터베이스와 통신할
 ## 구조
 도메인형 구조
 
+## 도메인
+Member (회원)
+
+Gym (암장)
