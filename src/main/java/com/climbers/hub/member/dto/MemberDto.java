@@ -34,4 +34,11 @@ public class MemberDto {
             this.email = member.getEmail();
         }
     }
+
+    // Member 정보 변경 요청 DTO
+    @Getter
+    public static class MemberUpdateRequest {
+        private String name;
+        private String password;
+    }
 }

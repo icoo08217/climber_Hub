@@ -44,4 +44,10 @@ public class MemberController {
         log.info("특정 회원 조회 API 호출: {}" , findMember.getMemberId());
         return ResponseEntity.ok(findMember);
     }
+
+    @PatchMapping("/{memberId}")
+    public ResponseEntity<Void> updateMember(@PathVariable Long memberId, @RequestBody MemberDto.MemberUpdateRequest request) {
+        memberService.updateMember(memberId, request);
+        return ResponseEntity.ok().build();
+    }
 }
