@@ -1,4 +1,4 @@
-package com.climbers.hub.member.contorller;
+package com.climbers.hub.member.controller;
 
 import com.climbers.hub.member.dto.MemberDto;
 import com.climbers.hub.member.service.MemberService;
