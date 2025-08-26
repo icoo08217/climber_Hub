@@ -1,5 +1,6 @@
 package com.climbers.hub.gym.domain;
 
+import com.climbers.hub.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity @Getter
 @Table(name = "gym")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Gym {
+public class Gym extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long gymId;

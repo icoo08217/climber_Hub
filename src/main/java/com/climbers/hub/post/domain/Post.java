@@ -1,5 +1,6 @@
 package com.climbers.hub.post.domain;
 
+import com.climbers.hub.domain.BaseEntity;
 import com.climbers.hub.gym.domain.Gym;
 import com.climbers.hub.member.domain.Member;
 import jakarta.persistence.Column;
@@ -22,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Entity @Getter
 @Table(name = "post")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Post {
+public class Post extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,13 +43,6 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gym_id")
     private Gym gym;
-
-    private LocalDateTime createdAt;
-
-    @PrePersist // Entity가 저장되기 전에 자동으로 실행
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-    }
 
     @Builder
     public Post(String title, String content, Member member, Gym gym) {
