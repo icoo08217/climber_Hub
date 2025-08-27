@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "Post API" , description = "암장 공지사항, 전체 공지사항 등 게시글 CRUD")
 @RestController
 @RequiredArgsConstructor
@@ -24,7 +26,7 @@ public class PostController {
 
     // 특정 암장 게시글 생성
     @Operation(summary = "특정 암장 게시글 생성")
-    @PostMapping("/gyms/{gymId}/posts")
+    @PostMapping("/gyms/{gymId}/post")
     public ResponseEntity<Long> createGymPost(@PathVariable Long gymId, @RequestBody PostDto.PostCreateRequest request) {
         // TODO: 로그인된 사용자 정보 가져오기
         String memberEmail = "testtest@naver.com";
@@ -34,11 +36,25 @@ public class PostController {
 
     // 특정 암장 게시글 조회
     @Operation(summary = "특정 암장 게시글 조회")
-    @GetMapping("/gyms/{gymId}/posts/{postId}")
+    @GetMapping("/gyms/{gymId}/post/{postId}")
     public ResponseEntity<PostDto.PostResponse> getGymPost(@PathVariable Long gymId, @PathVariable Long postId) {
         PostDto.PostResponse post = postService.getPostByGym(gymId, postId);
         return ResponseEntity.ok(post);
     }
 
+    @Operation(summary = "특정 암장 모든 게시글 조회")
+    @GetMapping("/gyms/{gymId}/posts")
+    public ResponseEntity<List<PostDto.PostResponse>> getGymAllPost(@PathVariable Long gymId) {
+        List<PostDto.PostResponse> postList = postService.getAllPostByGym(gymId);
+        return ResponseEntity.ok(postList);
+    }
 
+    @Operation(summary = "게시글 삭제")
+    @DeleteMapping("/post/{postId}")
+    public ResponseEntity<Void> deleteGymPost(@PathVariable Long postId) {
+        // TODO: 로그인 기능 구현 후 실제 사용자 정보로 교체하기
+        String memberEmail = "testtest@naver.com";
+        postService.deletePost(memberEmail, postId);
+        return ResponseEntity.noContent().build();
+    }
 }
