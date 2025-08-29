@@ -51,10 +51,22 @@ public class PostController {
 
     @Operation(summary = "게시글 삭제")
     @DeleteMapping("/post/{postId}")
-    public ResponseEntity<Void> deleteGymPost(@PathVariable Long postId) {
+    public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
         // TODO: 로그인 기능 구현 후 실제 사용자 정보로 교체하기
         String memberEmail = "testtest@naver.com";
         postService.deletePost(memberEmail, postId);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(summary = "게시글 수정")
+    @PatchMapping("/post/{postId}")
+    public ResponseEntity<Void> updatePost(@PathVariable Long postId, @RequestBody PostDto.PostUpdateRequest request) {
+        // TODO: 로그인 기능 구현 후 실제 사용자 정보로 교체
+        String memberEmail = "testtest@naver.com";
+        postService.updatePost(postId, memberEmail, request);
+        return ResponseEntity.ok().build();
+    }
+
+    // 전체 게시글 목록 조회 API 개발
+    
 }

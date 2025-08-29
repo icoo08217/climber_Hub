@@ -68,6 +68,24 @@ public class PostService {
         return posts;
     }
 
+    @Transactional
+    public void updatePost(Long postId, String memberEmail, PostDto.PostUpdateRequest request) {
+        log.info("Post Update Start, POST ID : {}" , postId);
+
+        // 수정할 Post
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post Not Found"));
+
+        // 현재 로그인한 사용자가 게시글의 작성자인지 확인
+        if (!post.getMember().getEmail().equals(memberEmail)) {
+            throw new SecurityException("Permission Denied");
+        }
+
+        // Update
+        post.update(request.getTitle(), request.getContent());
+        log.info("Post Update Success");
+    }
+
     public void deletePost(String memberEmail, Long postId) {
         log.info("member : {} , post ID : {} Post Delete Start" , memberEmail, postId);
         Post post = postRepository.findById(postId)
@@ -76,7 +94,7 @@ public class PostService {
         // 현재 로그인한 사용자가 게시글의 작성자인지 ? ++ 현재 로그인한 사용자가 전체 ADMIN 인지 확인하기
         if (!post.getMember().getEmail().equals(memberEmail)) {
             // 작성자가 아니라면 예외를 발생시켜 삭제 방지
-            throw new SecurityException("Access Denied to delete this post");
+            throw new SecurityException("Permission Denied to delete this post");
         }
 
         // 권한 확인 체크 후 게시글 삭제
