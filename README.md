@@ -1,14 +1,15 @@
 ## 🛠️ 프로젝트 구성 정보 (Project Configuration)
 이 프로젝트는 start.spring.io를 통해 아래와 같은 설정으로 생성되었습니다.
 
-항목 (Field)	설정값 (Value)
-Project	Maven Project
-Group ID	com.climbers
-Artifact ID	hub
-Java Version	17
-Spring Boot Version	3.3.2 (or latest stable)
-Packaging	Jar
-Package Name	com.climbers.hub
+| 항목 (Field) | 설정값 (Value) |
+|---|---|
+| Project | Maven Project |
+| Group ID | com.climbers |
+| Artifact ID | hub |
+| Java Version | 17 |
+| pring Boot Version | 3.3.2 |
+| Packaging | Jar |
+| Package Name | com.climbers.hub |
 
 Sheets로 내보내기
 <br>
