@@ -1,6 +1,7 @@
 package com.climbers.hub.member.domain;
 
 import com.climbers.hub.domain.BaseEntity;
+import com.climbers.hub.member.constant.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,11 +25,16 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
     @Builder
     public Member(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = Role.USER; // 기본 값은 USER 로 설정.
     }
 }
 
