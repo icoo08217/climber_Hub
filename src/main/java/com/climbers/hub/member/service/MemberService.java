@@ -6,6 +6,7 @@ import com.climbers.hub.member.dto.MemberDto;
 import com.climbers.hub.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,11 +20,19 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final MemberMapper memberMapper;
+    private final PasswordEncoder passwordEncoder;
 
     // Member create
     @Transactional
     public Long createMember(MemberDto.MemberCreateRequest request) {
+        if(memberRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("이미 사용 중인 Email 입니다.");
+        }
+
         Member newMemberInfo = request.toEntity();
+        // member 비밀번호 암호화
+        newMemberInfo.encodePassword(passwordEncoder);
+
         Member savedMember = memberRepository.save(newMemberInfo);
         return savedMember.getMemberId();
     }

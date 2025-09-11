@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity @Getter
 @Table(name = "members")
@@ -35,6 +36,11 @@ public class Member extends BaseEntity {
         this.email = email;
         this.password = password;
         this.role = Role.USER; // 기본 값은 USER 로 설정.
+    }
+
+    // password encoder
+    public void encodePassword(PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(this.password);
     }
 }
 
