@@ -17,7 +17,7 @@ import java.time.LocalTime;
 public class TimeSlot extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long timeslot_id;
+    private Long timeslotId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gym_id" , nullable = false)
