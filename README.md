@@ -53,9 +53,7 @@ Lombok: @Getter, @Setter, @Builder 등의 어노테이션으로 반복적인 코
 MySQL Driver: Spring 애플리케이션이 MySQL 데이터베이스와 통신할 수 있도록 연결합니다.
 
 ### 구조
-DDD - 도메인 주도 개발
-
-TDD - 테스트 주도 개발
+TDD - 테스트 주도 개발형식으로 테스트 코드를 작성하면서 해당 기능단위 테스트 코드 작성을 지향.
 
 ### 도메인
 1. Member (회원)
