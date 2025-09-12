@@ -2,11 +2,13 @@ package com.climbers.hub.member.dto;
 
 import com.climbers.hub.member.domain.Member;
 import lombok.Getter;
+import lombok.Setter;
 
 public class MemberDto {
 
     // Member 생성 요청 DTO
     @Getter
+    @Setter // 테스트용
     public static class MemberCreateRequest {
         private String name;
         private String email;
@@ -39,6 +41,12 @@ public class MemberDto {
     @Getter
     public static class MemberUpdateRequest {
         private String name;
+        private String password;
+    }
+
+    @Getter @Setter // 테스트용
+    public static class LoginRequest {
+        private String email;
         private String password;
     }
 }

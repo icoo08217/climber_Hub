@@ -1,5 +1,6 @@
 package com.climbers.hub.member.controller;
 
+import com.climbers.hub.config.jwt.JwtTokenDto;
 import com.climbers.hub.member.dto.MemberDto;
 import com.climbers.hub.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,5 +50,12 @@ public class MemberController {
     public ResponseEntity<Void> updateMember(@PathVariable Long memberId, @RequestBody MemberDto.MemberUpdateRequest request) {
         memberService.updateMember(memberId, request);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<JwtTokenDto> login(@RequestBody MemberDto.LoginRequest request) {
+        JwtTokenDto token = memberService.login(request.getEmail(), request.getPassword());
+        log.info("Login Success. User Email: {}" , request.getEmail());
+        return ResponseEntity.ok(token);
     }
 }
