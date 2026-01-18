@@ -43,8 +43,7 @@ dependencies {
     // 비동기 처리를 위한 webflux 추가
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-    //runtimeOnly 'com.mysql:mysql-connector-j'
-    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'com.mysql:mysql-connector-j'
 
     // MapStruct
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
