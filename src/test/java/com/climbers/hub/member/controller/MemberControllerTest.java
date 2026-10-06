@@ -38,9 +38,9 @@ class MemberControllerTest {
     @BeforeEach
     void setUp() {
         MemberDto.MemberCreateRequest request = new MemberDto.MemberCreateRequest();
-        request.setEmail("test@example.com");
-        request.setPassword("password123");
-        request.setName("테스트유저");
+        request.setEmail("test@naver.com");
+        request.setPassword("1234");
+        request.setName("테스트");
         memberService.createMember(request);
     }
 
@@ -49,8 +49,8 @@ class MemberControllerTest {
     void login_success() throws Exception {
         // given: 로그인 요청 DTO 준비
         MemberDto.LoginRequest loginRequest = new MemberDto.LoginRequest();
-        loginRequest.setEmail("test@example.com");
-        loginRequest.setPassword("password123");
+        loginRequest.setEmail("test@naver.com");
+        loginRequest.setPassword("1234");
         String jsonRequest = objectMapper.writeValueAsString(loginRequest);
 
         // when: 로그인 API에 POST 요청

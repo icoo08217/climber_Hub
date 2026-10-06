@@ -8,6 +8,7 @@ import com.climbers.hub.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ public class DataInitializer implements CommandLineRunner {
 
     private final MemberRepository memberRepository;
     private final GymRepository gymRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -27,15 +29,15 @@ public class DataInitializer implements CommandLineRunner {
         // Member 데이터 생성
         Member member1 = Member.builder()
                 .name("전병찬")
-                .email("testtest@naver.com")
-                .password("1234")
+                .email("test@naver.com")
+                .password(passwordEncoder.encode("1234"))
                 .build();
         memberRepository.save(member1);
 
         Member member2 = Member.builder()
                 .name("홍길동")
                 .email("test@gmail.com")
-                .password("0000")
+                .password(passwordEncoder.encode("0000"))
                 .build();
         memberRepository.save(member2);
 
