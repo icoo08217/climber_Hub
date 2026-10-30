@@ -9,7 +9,7 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     generate-ddl: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     show-sql: false
 naver:
   api:
