@@ -1,6 +1,8 @@
 package com.climbers.hub.auth.service;
 
 import com.climbers.hub.auth.dto.MemberSessionResponse;
+import com.climbers.hub.auth.MemberPrincipal;
+import com.climbers.hub.social.repository.SocialAccountRepository;
 import com.climbers.hub.auth.dto.SignUpRequest;
 import com.climbers.hub.member.domain.Member;
 import com.climbers.hub.member.repository.MemberRepository;
@@ -17,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 public class AuthService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SocialAccountRepository socialAccounts;
 
     @Transactional
     public Long signUp(SignUpRequest request) {
@@ -36,8 +39,11 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public MemberSessionResponse currentMember(String loginId) {
-        return memberRepository.findByLoginId(loginId).map(MemberSessionResponse::from)
+    public MemberSessionResponse currentMember(MemberPrincipal principal) {
+        Member member = memberRepository.findById(principal.getMemberId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "다시 로그인해주세요."));
+        return new MemberSessionResponse(member.getMemberId(), member.getLoginId(), member.getName(), member.getEmail(),
+                member.getRole().name(), member.getPassword() != null,
+                socialAccounts.findByMember_MemberId(member.getMemberId()).stream().map(account -> account.getProvider().name()).sorted().toList());
     }
 }

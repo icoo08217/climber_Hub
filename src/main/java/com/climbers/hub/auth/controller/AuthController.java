@@ -1,6 +1,9 @@
 package com.climbers.hub.auth.controller;
 
 import com.climbers.hub.auth.dto.*;
+import com.climbers.hub.auth.MemberPrincipal;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import com.climbers.hub.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,11 +50,14 @@ public class AuthController {
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
         contexts.saveContext(context, request, response);
-        return authService.currentMember(authentication.getName());
+        return authService.currentMember((MemberPrincipal) authentication.getPrincipal());
     }
 
     @GetMapping("/me")
     public MemberSessionResponse me(Authentication authentication) {
-        return authService.currentMember(authentication.getName());
+        if (!(authentication.getPrincipal() instanceof MemberPrincipal principal)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "다시 로그인해주세요.");
+        }
+        return authService.currentMember(principal);
     }
 }

@@ -17,16 +17,16 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // DB 에 primary_key 를 위임한다.
     private Long memberId;
 
-    @Column(name = "login_id", nullable = false, unique = true, length = 50)
+    @Column(name = "login_id", unique = true, length = 50)
     private String loginId;
 
     @Column(nullable = false)
     private String name;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column
     private String password;
 
     @Enumerated(EnumType.STRING)

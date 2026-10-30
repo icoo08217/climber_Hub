@@ -1,0 +1,9 @@
+# Reference only: not imported automatically. Merge this app section into application-secret.yaml.
+app:
+  oauth:
+    frontend-base-url: "http://localhost:5173"
+    kakao:
+      enabled: true
+      client-id: "YOUR_REST_API_KEY"
+      client-secret: "YOUR_CLIENT_SECRET"
+      redirect-uri: "http://localhost:5173/api/login/oauth2/code/kakao"

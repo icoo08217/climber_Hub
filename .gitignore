@@ -214,3 +214,4 @@ src/main/resources/application-secret.yaml
 
 # Local database backups may contain private member data.
 /work/db-backups/
+/work/social-*.tsv
