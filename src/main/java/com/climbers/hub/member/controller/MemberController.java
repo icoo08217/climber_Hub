@@ -1,6 +1,5 @@
 package com.climbers.hub.member.controller;
 
-import com.climbers.hub.config.jwt.JwtTokenDto;
 import com.climbers.hub.member.dto.MemberDto;
 import com.climbers.hub.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,15 +19,6 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
-
-    // Member create
-    @Operation(summary = "신규 회원 가입")
-    @PostMapping
-    public ResponseEntity<Long> createMember(@RequestBody MemberDto.MemberCreateRequest request) {
-        Long memberId = memberService.createMember(request);
-        log.info("회원 가입 성공 : {}" , memberId);
-        return ResponseEntity.ok(memberId);
-    }
 
     @Operation(summary = "모든 회원 조회")
     @GetMapping("/list")
@@ -52,10 +42,4 @@ public class MemberController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<JwtTokenDto> login(@RequestBody MemberDto.LoginRequest request) {
-        JwtTokenDto token = memberService.login(request.getEmail(), request.getPassword());
-        log.info("Login Success. User Email: {}" , request.getEmail());
-        return ResponseEntity.ok(token);
-    }
 }

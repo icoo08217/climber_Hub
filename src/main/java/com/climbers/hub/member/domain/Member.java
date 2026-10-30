@@ -17,6 +17,9 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // DB 에 primary_key 를 위임한다.
     private Long memberId;
 
+    @Column(name = "login_id", nullable = false, unique = true, length = 50)
+    private String loginId;
+
     @Column(nullable = false)
     private String name;
 
@@ -31,7 +34,8 @@ public class Member extends BaseEntity {
     private Role role;
 
     @Builder
-    public Member(String name, String email, String password) {
+    public Member(String loginId, String name, String email, String password) {
+        this.loginId = loginId;
         this.name = name;
         this.email = email;
         this.password = password;
@@ -41,6 +45,11 @@ public class Member extends BaseEntity {
     // password encoder
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
+    }
+
+    public void updateProfile(String name, String password, PasswordEncoder encoder) {
+        if (name != null && !name.isBlank()) this.name = name;
+        if (password != null && !password.isBlank()) this.password = encoder.encode(password);
     }
 }
 

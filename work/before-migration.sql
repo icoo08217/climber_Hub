@@ -1,0 +1,2 @@
+SELECT COUNT(*) AS existing_members FROM members;
+SELECT COLUMN_NAME, COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='members' AND COLUMN_NAME='login_id';
