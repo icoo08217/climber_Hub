@@ -85,7 +85,7 @@ class KakaoLoginTest {
     @Test void newKakaoMemberGetsSessionWithoutLocalCredentialsAndRepeatLoginFindsSameMember() throws Exception {
         Flow first = start("/api/oauth2/authorization/kakao", null);
         String previousId = first.session().getId();
-        assertThat(callback(first).getResponse().getRedirectedUrl()).isEqualTo("http://localhost:5173/?social=success");
+        assertThat(callback(first).getResponse().getRedirectedUrl()).isEqualTo("http://localhost:5173/");
         assertThat(first.session().getId()).isNotEqualTo(previousId);
         mvc.perform(get("/api/auth/me").session(first.session())).andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("카카오클라이머"))
@@ -146,7 +146,7 @@ class KakaoLoginTest {
         callback(start("/api/oauth2/authorization/kakao", null));
         var local = localSession();
         var result = callback(start(linkUrl(local), local));
-        assertThat(result.getResponse().getRedirectedUrl()).endsWith("/?social_error=account_already_linked");
+        assertThat(result.getResponse().getRedirectedUrl()).endsWith("/account?social_error=account_already_linked");
         assertThat(accounts.count()).isEqualTo(1);
         mvc.perform(get("/api/auth/me").session(local)).andExpect(status().isOk()).andExpect(jsonPath("$.loginId").value("local_user"));
     }
@@ -156,7 +156,7 @@ class KakaoLoginTest {
         Flow flow = start(linkUrl(session), session);
         session.removeAttribute("SPRING_SECURITY_CONTEXT");
         var result = callback(flow);
-        assertThat(result.getResponse().getRedirectedUrl()).endsWith("/?social_error=link_session_expired");
+        assertThat(result.getResponse().getRedirectedUrl()).endsWith("/account?social_error=link_session_expired");
         assertThat(accounts.count()).isZero();
         assertThat(members.count()).isEqualTo(1);
     }
@@ -176,7 +176,7 @@ class KakaoLoginTest {
         mvc.perform(get(ticketUrl).session(session)).andExpect(status().is4xxClientError());
         profile("654321", null);
         var result = callback(start(linkUrl(session), session));
-        assertThat(result.getResponse().getRedirectedUrl()).endsWith("/?social_error=provider_already_linked");
+        assertThat(result.getResponse().getRedirectedUrl()).endsWith("/account?social_error=provider_already_linked");
         assertThat(accounts.count()).isEqualTo(1);
     }
 
@@ -210,8 +210,8 @@ class KakaoLoginTest {
     @Transactional(propagation = org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED)
     void returningSocialLoginWorksAcrossIndependentDatabaseTransactions() throws Exception {
         try {
-            assertThat(callback(start("/api/oauth2/authorization/kakao", null)).getResponse().getRedirectedUrl()).endsWith("/?social=success");
-            assertThat(callback(start("/api/oauth2/authorization/kakao", null)).getResponse().getRedirectedUrl()).endsWith("/?social=success");
+            assertThat(callback(start("/api/oauth2/authorization/kakao", null)).getResponse().getRedirectedUrl()).endsWith("/");
+            assertThat(callback(start("/api/oauth2/authorization/kakao", null)).getResponse().getRedirectedUrl()).endsWith("/");
             assertThat(members.count()).isEqualTo(1);
         } finally {
             // This test runs only against the isolated application-test H2 database.

@@ -89,13 +89,16 @@ public class SecurityConfig {
                     .tokenEndpoint(endpoint -> endpoint.accessTokenResponseClient(tokenClient.getObject()))
                     .userInfoEndpoint(endpoint -> endpoint.userService(socialUsers))
                     .authorizedClientRepository(authorizedClients.getObject())
-                    .successHandler((request, response, auth) -> response.sendRedirect(frontend + "/?social=success"))
+                    .successHandler((request, response, auth) -> {
+                        boolean linking = request.getAttribute(SocialAuthorizationRequests.LINK_MEMBER) != null;
+                        response.sendRedirect(frontend + (linking ? "/account?social=success" : "/"));
+                    })
                     .failureHandler((request, response, exception) -> {
                         String code = exception instanceof org.springframework.security.oauth2.core.OAuth2AuthenticationException error
                                 ? error.getError().getErrorCode() : "login_failed";
                         if (!java.util.Set.of("email_conflict", "account_already_linked", "provider_already_linked", "link_session_expired", "account_conflict").contains(code)) code = "login_failed";
                         boolean linking = request.getAttribute(SocialAuthorizationRequests.LINK_MEMBER) != null;
-                        response.sendRedirect(frontend + (linking ? "/?social_error=" : "/login?social_error=") + code);
+                        response.sendRedirect(frontend + (linking ? "/account?social_error=" : "/login?social_error=") + code);
                     }));
         }
         return http.build();

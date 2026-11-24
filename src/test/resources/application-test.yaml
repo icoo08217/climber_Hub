@@ -16,6 +16,9 @@ naver:
     client-id: test
     client-secret: test
 app:
+  media:
+    cloudinary:
+      enabled: false
   oauth:
     kakao:
       enabled: false

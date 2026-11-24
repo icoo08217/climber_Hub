@@ -7,6 +7,8 @@ import com.climbers.hub.post.constant.PostType;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,7 +27,7 @@ public class Post extends BaseEntity {
     private String title;
 
     @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @Enumerated(EnumType.STRING) // Enum 타입을 문자열로 저장
@@ -40,6 +42,10 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "gym_id", nullable = true)
     private Gym gym;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("displayOrder ASC")
+    private List<PostMedia> media = new ArrayList<>();
+
     @Builder
     public Post(String title, String content, PostType postType, Member member, Gym gym) {
         this.title = title;
@@ -53,5 +59,9 @@ public class Post extends BaseEntity {
     public void update(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    public void addMedia(com.climbers.hub.media.service.StoredMedia storedMedia, int displayOrder) {
+        media.add(new PostMedia(this, storedMedia, displayOrder));
     }
 }

@@ -7,5 +7,7 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    List<Post> findByGym_GymId(Long gymId);
+    List<Post> findByGym_GymIdOrderByCreatedAtDesc(Long gymId);
+
+    List<Post> findByGymIsNullOrderByCreatedAtDesc();
 }

@@ -1,6 +1,10 @@
 spring:
   config:
     import: optional:classpath:application-secret.yaml
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
@@ -26,3 +30,8 @@ server:
         http-only: true
         same-site: lax
         secure: ${SESSION_COOKIE_SECURE:false}
+
+app:
+  media:
+    cloudinary:
+      enabled: false
