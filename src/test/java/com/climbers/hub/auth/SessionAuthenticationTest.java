@@ -107,4 +107,61 @@ class SessionAuthenticationTest {
         mvc.perform(patch("/member/1").session(session).with(csrf()).contentType(MediaType.APPLICATION_JSON)
                 .content("{\"password\":\"changed123\"}")).andExpect(status().isForbidden());
     }
+
+    @Test
+    void memberCanUpdateOwnProfileButCannotUseDuplicateEmail() throws Exception {
+        createMember();
+        mvc.perform(post("/api/auth/signup").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content(signup("other_user", "other@example.com"))).andExpect(status().isCreated());
+        MvcResult login = mvc.perform(post("/api/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"loginId\":\"climber95\",\"password\":\"password123\"}"))
+                .andExpect(status().isOk()).andReturn();
+        MockHttpSession session = (MockHttpSession) login.getRequest().getSession(false);
+
+        mvc.perform(patch("/api/members/me/profile").session(session).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"새 이름\",\"email\":\"new@example.com\"}"))
+                .andExpect(status().isForbidden());
+        mvc.perform(patch("/api/members/me/profile").session(session).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"새 이름\",\"email\":\"NEW@example.com\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("새 이름"))
+                .andExpect(jsonPath("$.email").value("new@example.com"))
+                .andExpect(jsonPath("$.loginId").value("climber95"));
+        mvc.perform(get("/api/auth/me").session(session)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("새 이름"));
+        mvc.perform(patch("/api/members/me/profile").session(session).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"새 이름\",\"email\":\"other@example.com\"}"))
+                .andExpect(status().isConflict());
+        mvc.perform(patch("/api/members/me/profile").session(session).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"   \",\"email\":\"invalid\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void localMemberChangesPasswordAfterCurrentPasswordVerification() throws Exception {
+        createMember();
+        MvcResult login = mvc.perform(post("/api/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"loginId\":\"climber95\",\"password\":\"password123\"}"))
+                .andExpect(status().isOk()).andReturn();
+        MockHttpSession session = (MockHttpSession) login.getRequest().getSession(false);
+        String oldSessionId = session.getId();
+
+        mvc.perform(patch("/api/members/me/password").session(session).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"currentPassword\":\"wrong-password\",\"newPassword\":\"changed123\"}"))
+                .andExpect(status().isBadRequest());
+        mvc.perform(patch("/api/members/me/password").session(session).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("currentPassword", "password123", "newPassword", "가".repeat(25)))))
+                .andExpect(status().isBadRequest());
+        mvc.perform(patch("/api/members/me/password").session(session).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"currentPassword\":\"password123\",\"newPassword\":\"changed123\"}"))
+                .andExpect(status().isNoContent());
+        assertThat(session.getId()).isNotEqualTo(oldSessionId);
+        mvc.perform(get("/api/auth/me").session(session)).andExpect(status().isOk());
+        mvc.perform(post("/api/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"loginId\":\"climber95\",\"password\":\"password123\"}"))
+                .andExpect(status().isUnauthorized());
+        mvc.perform(post("/api/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"loginId\":\"climber95\",\"password\":\"changed123\"}"))
+                .andExpect(status().isOk());
+    }
 }

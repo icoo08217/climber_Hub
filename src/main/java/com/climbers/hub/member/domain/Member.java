@@ -51,6 +51,15 @@ public class Member extends BaseEntity {
         if (name != null && !name.isBlank()) this.name = name;
         if (password != null && !password.isBlank()) this.password = encoder.encode(password);
     }
+
+    public void updateOwnProfile(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    public void changePassword(String password, PasswordEncoder encoder) {
+        this.password = encoder.encode(password);
+    }
 }
 
 
