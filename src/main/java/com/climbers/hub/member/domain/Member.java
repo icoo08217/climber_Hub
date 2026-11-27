@@ -29,6 +29,12 @@ public class Member extends BaseEntity {
     @Column
     private String password;
 
+    @Column(name = "profile_image_url", length = 1000)
+    private String profileImageUrl;
+
+    @Column(name = "profile_image_public_id", length = 255)
+    private String profileImagePublicId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -59,6 +65,16 @@ public class Member extends BaseEntity {
 
     public void changePassword(String password, PasswordEncoder encoder) {
         this.password = encoder.encode(password);
+    }
+
+    public void updateProfileImage(String profileImageUrl, String profileImagePublicId) {
+        this.profileImageUrl = profileImageUrl;
+        this.profileImagePublicId = profileImagePublicId;
+    }
+
+    public void clearProfileImage() {
+        this.profileImageUrl = null;
+        this.profileImagePublicId = null;
     }
 }
 

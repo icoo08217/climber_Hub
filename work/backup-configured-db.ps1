@@ -21,7 +21,7 @@ $dbAccountName = Read-DbValue 'username'
 $backupDirectory = 'C:\dev\work\db-backups'
 New-Item -ItemType Directory -Path $backupDirectory -Force | Out-Null
 $safeSchema = $dbSchemaName.Replace('-', '_')
-$backupPath = Join-Path $backupDirectory ($safeSchema + '_before_media_comments_' + (Get-Date -Format 'yyyyMMdd_HHmmss') + '.sql')
+$backupPath = Join-Path $backupDirectory ($safeSchema + '_before_schema_change_' + (Get-Date -Format 'yyyyMMdd_HHmmss') + '.sql')
 $arguments = @(
     "--host=$dbHostName",
     "--port=$dbPortNumber",

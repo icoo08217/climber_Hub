@@ -43,7 +43,7 @@ public class AuthService {
         Member member = memberRepository.findById(principal.getMemberId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "다시 로그인해주세요."));
         return new MemberSessionResponse(member.getMemberId(), member.getLoginId(), member.getName(), member.getEmail(),
-                member.getRole().name(), member.getPassword() != null,
+                member.getProfileImageUrl(), member.getRole().name(), member.getPassword() != null,
                 socialAccounts.findByMember_MemberId(member.getMemberId()).stream().map(account -> account.getProvider().name()).sorted().toList());
     }
 }

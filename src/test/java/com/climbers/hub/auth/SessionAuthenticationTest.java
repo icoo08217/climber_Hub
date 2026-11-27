@@ -1,6 +1,8 @@
 package com.climbers.hub.auth;
 
 import com.climbers.hub.member.repository.MemberRepository;
+import com.climbers.hub.media.service.MediaStorage;
+import com.climbers.hub.media.service.StoredMedia;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -15,6 +19,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -28,6 +34,7 @@ class SessionAuthenticationTest {
     @Autowired ObjectMapper json;
     @Autowired MemberRepository members;
     @Autowired PasswordEncoder encoder;
+    @MockitoBean MediaStorage mediaStorage;
 
     String signup(String id, String email) throws Exception {
         return json.writeValueAsString(Map.of("loginId", id, "email", email, "name", "클라이머", "password", "password123"));
@@ -163,5 +170,44 @@ class SessionAuthenticationTest {
         mvc.perform(post("/api/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON)
                 .content("{\"loginId\":\"climber95\",\"password\":\"changed123\"}"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void memberUploadsAndDeletesProfileImage() throws Exception {
+        createMember();
+        MvcResult login = mvc.perform(post("/api/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"loginId\":\"climber95\",\"password\":\"password123\"}"))
+                .andExpect(status().isOk()).andReturn();
+        MockHttpSession session = (MockHttpSession) login.getRequest().getSession(false);
+        MockMultipartFile image = new MockMultipartFile(
+                "image", "profile.png", "image/png", new byte[]{1, 2, 3});
+        when(mediaStorage.uploadProfileImage(any())).thenReturn(new StoredMedia(
+                "profiles/member-1", "https://cdn.example.com/profile.png", com.climbers.hub.post.domain.MediaType.IMAGE,
+                "profile.png", "image/png", 3));
+
+        mvc.perform(multipart("/api/members/me/profile-image").file(image).session(session).with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.profileImageUrl").value("https://cdn.example.com/profile.png"));
+        assertThat(members.findByLoginId("climber95").orElseThrow().getProfileImagePublicId())
+                .isEqualTo("profiles/member-1");
+
+        mvc.perform(delete("/api/members/me/profile-image").session(session).with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.profileImageUrl").isEmpty());
+        assertThat(members.findByLoginId("climber95").orElseThrow().getProfileImagePublicId()).isNull();
+    }
+
+    @Test
+    void memberCannotUploadVideoAsProfileImage() throws Exception {
+        createMember();
+        MvcResult login = mvc.perform(post("/api/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"loginId\":\"climber95\",\"password\":\"password123\"}"))
+                .andExpect(status().isOk()).andReturn();
+        MockMultipartFile video = new MockMultipartFile(
+                "image", "profile.mp4", "video/mp4", new byte[]{1, 2, 3});
+
+        mvc.perform(multipart("/api/members/me/profile-image").file(video)
+                        .session((MockHttpSession) login.getRequest().getSession(false)).with(csrf()))
+                .andExpect(status().isBadRequest());
     }
 }

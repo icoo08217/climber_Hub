@@ -21,12 +21,21 @@ public class CloudinaryMediaStorage implements MediaStorage {
 
     @Override
     public StoredMedia upload(MultipartFile file) {
+        return upload(file, "climbers-hub/posts");
+    }
+
+    @Override
+    public StoredMedia uploadProfileImage(MultipartFile file) {
+        return upload(file, "climbers-hub/profiles");
+    }
+
+    private StoredMedia upload(MultipartFile file, String assetFolder) {
         MediaType mediaType = MediaType.fromContentType(file.getContentType());
         String resourceType = mediaType == MediaType.VIDEO ? "video" : "image";
         try {
             Map<?, ?> result = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
                     "resource_type", resourceType,
-                    "asset_folder", "climbers-hub/posts",
+                    "asset_folder", assetFolder,
                     "use_filename", false,
                     "unique_filename", true));
             return new StoredMedia(

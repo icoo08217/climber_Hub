@@ -13,10 +13,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/members/me")
@@ -41,6 +45,21 @@ public class MemberProfileController {
         memberService.changeOwnPassword(principal.getMemberId(), request);
         servletRequest.changeSessionId();
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = "/profile-image", consumes = "multipart/form-data")
+    public MemberSessionResponse updateProfileImage(Authentication authentication,
+                                                    @RequestPart("image") MultipartFile image) {
+        MemberPrincipal principal = requirePrincipal(authentication);
+        memberService.updateProfileImage(principal.getMemberId(), image);
+        return authService.currentMember(principal);
+    }
+
+    @DeleteMapping("/profile-image")
+    public MemberSessionResponse deleteProfileImage(Authentication authentication) {
+        MemberPrincipal principal = requirePrincipal(authentication);
+        memberService.deleteProfileImage(principal.getMemberId());
+        return authService.currentMember(principal);
     }
 
     private MemberPrincipal requirePrincipal(Authentication authentication) {

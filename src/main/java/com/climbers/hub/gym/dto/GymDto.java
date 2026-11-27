@@ -23,6 +23,12 @@ public class GymDto {
         private final String description;
         private final String address;
         private final String phone;
+        private final Double latitude;
+        private final Double longitude;
+        private final String openHours;
+        private final String externalSource;
+        private final String verificationStatus;
+        private final boolean active;
 
         public GymSimpleResponse(Gym gym) {
             this.gymId = gym.getGymId();
@@ -30,6 +36,12 @@ public class GymDto {
             this.description = gym.getDescription();
             this.address = gym.getAddress();
             this.phone = gym.getPhone();
+            this.latitude = gym.getLatitude();
+            this.longitude = gym.getLongitude();
+            this.openHours = gym.getOpenHours();
+            this.externalSource = gym.getExternalSource().name();
+            this.verificationStatus = gym.getVerificationStatus().name();
+            this.active = gym.isActive();
         }
     }
 
@@ -45,6 +57,11 @@ public class GymDto {
         private final Double longitude;
         private final String openHours;
         private final String pricingInfo;
+        private final String externalSource;
+        private final String externalId;
+        private final String verificationStatus;
+        private final boolean active;
+        private final java.time.LocalDateTime verifiedAt;
 
         public GymDetailResponse(Gym gym) {
             this.gymId = gym.getGymId();
@@ -56,6 +73,11 @@ public class GymDto {
             this.longitude = gym.getLongitude();
             this.openHours = gym.getOpenHours();
             this.pricingInfo = gym.getPricingInfo();
+            this.externalSource = gym.getExternalSource().name();
+            this.externalId = gym.getExternalId();
+            this.verificationStatus = gym.getVerificationStatus().name();
+            this.active = gym.isActive();
+            this.verifiedAt = gym.getVerifiedAt();
         }
     }
 }

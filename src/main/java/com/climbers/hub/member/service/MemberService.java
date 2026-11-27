@@ -5,17 +5,24 @@ import com.climbers.hub.member.dto.MemberDto;
 import com.climbers.hub.member.dto.PasswordChangeRequest;
 import com.climbers.hub.member.dto.ProfileUpdateRequest;
 import com.climbers.hub.member.repository.MemberRepository;
+import com.climbers.hub.media.service.MediaStorage;
+import com.climbers.hub.media.service.StoredMedia;
+import com.climbers.hub.post.domain.MediaType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -25,6 +32,10 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MediaStorage mediaStorage;
+
+    private static final Set<String> PROFILE_IMAGE_TYPES = Set.of("image/jpeg", "image/png", "image/webp", "image/gif");
+    private static final long PROFILE_IMAGE_MAX_SIZE = 5L * 1024 * 1024;
 
     // Member All Read
     @Transactional(readOnly = true)
@@ -80,6 +91,68 @@ public class MemberService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "새 비밀번호는 현재 비밀번호와 달라야 합니다.");
         }
         member.changePassword(request.newPassword(), passwordEncoder);
+    }
+
+    @Transactional
+    public void updateProfileImage(Long memberId, MultipartFile file) {
+        validateProfileImage(file);
+        Member member = requireMember(memberId);
+        StoredMedia uploaded = mediaStorage.uploadProfileImage(file);
+        String previousPublicId = member.getProfileImagePublicId();
+        registerProfileImageCleanup(uploaded.publicId(), previousPublicId);
+        member.updateProfileImage(uploaded.secureUrl(), uploaded.publicId());
+    }
+
+    @Transactional
+    public void deleteProfileImage(Long memberId) {
+        Member member = requireMember(memberId);
+        String previousPublicId = member.getProfileImagePublicId();
+        if (previousPublicId == null) return;
+        member.clearProfileImage();
+        registerDeleteAfterCommit(previousPublicId);
+    }
+
+    private void validateProfileImage(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "프로필 사진을 선택해주세요.");
+        }
+        if (!PROFILE_IMAGE_TYPES.contains(file.getContentType())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "JPG, PNG, WEBP, GIF 이미지만 올릴 수 있습니다.");
+        }
+        if (file.getSize() > PROFILE_IMAGE_MAX_SIZE) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "프로필 사진은 5MB 이하여야 합니다.");
+        }
+    }
+
+    private void registerProfileImageCleanup(String uploadedPublicId, String previousPublicId) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                if (previousPublicId != null) safeDeleteImage(previousPublicId);
+            }
+
+            @Override
+            public void afterCompletion(int status) {
+                if (status != TransactionSynchronization.STATUS_COMMITTED) safeDeleteImage(uploadedPublicId);
+            }
+        });
+    }
+
+    private void registerDeleteAfterCommit(String publicId) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                safeDeleteImage(publicId);
+            }
+        });
+    }
+
+    private void safeDeleteImage(String publicId) {
+        try {
+            mediaStorage.delete(publicId, MediaType.IMAGE);
+        } catch (RuntimeException exception) {
+            log.warn("프로필 이미지 정리에 실패했습니다. publicId={}", publicId, exception);
+        }
     }
 
     private Member requireMember(Long memberId) {
